@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>揪友娛樂坊 — 週六娛樂局報名</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f5f4f0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem 1rem 3rem;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.75rem 1.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .suits { font-size: 20px; letter-spacing: 6px; margin-bottom: 6px; }
+  .s-b { color: #2C2C2A; }
+  .s-r { color: #A32D2D; }
+  .org { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: #A32D2D; line-height: 1.15; }
+  .ev-title { font-size: 15px; font-weight: 500; color: #666; margin-top: 4px; letter-spacing: .04em; }
+  .sub { font-size: 11px; color: #aaa; margin-top: 3px; }
+  .sec-label { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #999; margin: 1.25rem 0 .5rem; display: flex; align-items: center; gap: 5px; }
+  .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .slot { border: 1px solid #ddd; border-radius: 10px; background: #fff; padding: 10px 6px; text-align: center; cursor: pointer; transition: all .15s; -webkit-tap-highlight-color: transparent; }
+  .slot:hover { background: #fafaf8; }
+  .slot.active { border: 2px solid #A32D2D; }
+  .slot-time { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: #222; display: block; }
+  .slot.active .slot-time { color: #A32D2D; }
+  .slot-tag { font-size: 11px; color: #aaa; display: block; margin-top: 2px; }
+  .slot.active .slot-tag { color: #A32D2D; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: #666; }
+  .field input, .field select { height: 38px; padding: 0 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #222; background: #fff; outline: none; -webkit-appearance: none; }
+  .field input:focus, .field select:focus { border-color: #A32D2D; }
+  .field input::placeholder { color: #bbb; }
+  .fee-row { display: flex; gap: 6px; }
+  .fee-row input { flex: 1; }
+  .fee-row select { width: 80px; flex-shrink: 0; }
+  .input-row { display: flex; gap: 8px; margin-bottom: .75rem; }
+  .input-row input { flex: 1; height: 42px; padding: 0 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #222; outline: none; }
+  .input-row input:focus { border-color: #A32D2D; }
+  .input-row input::placeholder { color: #bbb; }
+  .btn-add { height: 42px; padding: 0 18px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: #222; cursor: pointer; white-space: nowrap; transition: background .15s; -webkit-tap-highlight-color: transparent; }
+  .btn-add:hover { background: #f5f4f0; }
+  .btn-add:active { transform: scale(0.97); }
+  .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: .9rem 0; }
+  .stat { background: #f5f4f0; border-radius: 8px; padding: .65rem; text-align: center; }
+  .stat-n { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #222; display: block; }
+  .stat-l { font-size: 11px; color: #888; display: block; margin-top: 1px; }
+  .player-list { display: flex; flex-direction: column; gap: 5px; }
+  .p-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid #eee; border-radius: 8px; background: #fff; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+  .p-item.wait { background: #fafaf8; border-style: dashed; }
+  .p-suit { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; min-width: 22px; }
+  .p-rank { font-size: 12px; color: #bbb; min-width: 18px; }
+  .p-name { flex: 1; font-size: 15px; font-weight: 500; color: #222; }
+  .p-item.wait .p-name { color: #888; }
+  .badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+  .badge-full { background: #eaf3de; color: #3B6D11; }
+  .badge-wait { background: #faeeda; color: #854F0B; }
+  .rm-btn { background: none; border: none; cursor: pointer; color: #ccc; font-size: 16px; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: all .15s; }
+  .rm-btn:hover { color: #A32D2D; background: #fcebeb; }
+  .divider { border: none; border-top: 1px solid #eee; margin: 1.25rem 0; }
+  .preview { background: #f5f4f0; border: 1px solid #e5e3de; border-radius: 10px; padding: 13px 15px; font-size: 13px; line-height: 1.9; color: #333; white-space: pre-wrap; font-family: 'DM Sans', sans-serif; min-height: 80px; max-height: 320px; overflow-y: auto; }
+  .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 10px; }
+  .btn-copy { height: 44px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: #222; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: background .15s; -webkit-tap-highlight-color: transparent; }
+  .btn-copy:hover { background: #f5f4f0; }
+  .btn-copy.ok { color: #3B6D11; border-color: #639922; }
+  .btn-reset { height: 44px; padding: 0 14px; border: 1px solid #eee; border-radius: 8px; background: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #aaa; cursor: pointer; white-space: nowrap; transition: all .15s; -webkit-tap-highlight-color: transparent; }
+  .btn-reset:hover { color: #A32D2D; border-color: #A32D2D; background: #fcebeb; }
+  .status-bar { text-align: center; font-size: 11px; color: #bbb; margin-top: 1rem; }
+  .status-bar.conn { color: #3B6D11; }
+  .status-bar.err { color: #A32D2D; }
+  .empty { font-size: 13px; color: #bbb; text-align: center; padding: 10px 0; }
+  .shake { animation: shake .3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .admin-toggle { text-align: center; margin-top: 1.5rem; }
+  .admin-toggle button { background: none; border: none; font-size: 12px; color: #ccc; cursor: pointer; text-decoration: underline; }
+  .admin-panel { margin-top: .75rem; padding: 1rem; background: #fafaf8; border: 1px dashed #ddd; border-radius: 10px; display: none; }
+  .admin-panel.show { display: block; }
+  .admin-panel .field { margin-bottom: .5rem; }
+  .admin-panel .field label { font-size: 12px; color: #888; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="suits"><span class="s-b">♠</span><span class="s-r">♥</span><span class="s-r">♦</span><span class="s-b">♣</span></div>
+    <div class="org">揪友娛樂坊</div>
+    <div class="ev-title">週六娛樂局</div>
+    <div class="sub">Texas Hold'em Tournament</div>
+  </div>
+  <div class="sec-label">🕐 選擇時段</div>
+  <div class="slots">
+    <div class="slot" id="slot-0" onclick="selectSlot(0)"><span class="slot-time">下午 3:00</span><span class="slot-tag">第一場</span></div>
+    <div class="slot" id="slot-1" onclick="selectSlot(1)"><span class="slot-time">下午 6:00</span><span class="slot-tag">第二場</span></div>
+    <div class="slot" id="slot-2" onclick="selectSlot(2)"><span class="slot-time">下午 9:00</span><span class="slot-tag">第三場</span></div>
+  </div>
+  <div id="signupArea" style="display:none">
+    <div class="sec-label">👤 玩家報名</div>
+    <div class="input-row">
+      <input type="text" id="nameInput" placeholder="輸入你的名字..." maxlength="20" />
+      <button class="btn-add" onclick="addPlayer()">＋ 報名</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="stat-n" id="mainCount">0</span><span class="stat-l">已報名</span></div>
+      <div class="stat"><span class="stat-n" id="waitCount">0</span><span class="stat-l">候補人數</span></div>
+      <div class="stat"><span class="stat-n" id="seatLeft">10</span><span class="stat-l">剩餘座位</span></div>
+    </div>
+    <div class="sec-label">♠ 正式玩家</div>
+    <div class="player-list" id="mainList"><div class="empty">尚未有人報名</div></div>
+    <div id="waitSection" style="display:none">
+      <div class="sec-label">⏳ 候補名單</div>
+      <div class="player-list" id="waitList"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-label">💬 LINE 訊息預覽</div>
+    <div class="preview" id="preview">請先選擇時段</div>
+    <div class="btn-row">
+      <button class="btn-copy" id="copyBtn" onclick="copyMsg()">📋 複製到剪貼簿</button>
+      <button class="btn-reset" onclick="confirmReset()">🔄 清空名單</button>
+    </div>
+  </div>
+  <div class="status-bar" id="statusBar">連線中...</div>
+  <div class="admin-toggle"><button onclick="toggleAdmin()">⚙ 主辦人設定</button></div>
+  <div class="admin-panel" id="adminPanel">
+    <div class="info-grid">
+      <div class="field"><label>📅 比賽日期</label><input type="date" id="eventDate" oninput="saveSettings()" /></div>
+      <div class="field"><label>📍 地點</label><input type="text" id="eventPlace" placeholder="老王家、某會所" maxlength="30" oninput="saveSettings()" /></div>
+      <div class="field" style="grid-column:1/-1"><label>💰 報名費</label>
+        <div class="fee-row">
+          <input type="number" id="feeAmount" placeholder="0" min="0" oninput="saveSettings()" />
+          <select id="feeCurrency" onchange="saveSettings()"><option value="NTD">NTD</option><option value="USD">USD</option><option value="CNY">CNY</option><option value="籌碼">籌碼</option></select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyCDyHKKlRDVALmW-a1kQ5MrlKkRHfqo3i4",
+  authDomain: "jo-poker.firebaseapp.com",
+  databaseURL: "https://jo-poker-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "jo-poker",
+  storageBucket: "jo-poker.firebasestorage.app",
+  messagingSenderId: "1046173492379",
+  appId: "1:1046173492379:web:e6eaebda81222cffcdd23e"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const SUITS=['♠','♥','♦','♣','♠','♥','♦','♣','♠','♥'];
+const RANKS=['A','K','Q','J','10','9','8','7','6','5'];
+const SLOT_LABELS=['下午 3:00（第一場）','下午 6:00（第二場）','下午 9:00（第三場）'];
+const SLOT_KEYS=['slot0','slot1','slot2'];
+let activeSlot=null, currentData={players:[],waitlist:[]};
+function setStatus(msg,type=''){const el=document.getElementById('statusBar');el.textContent=msg;el.className='status-bar '+type;}
+window.selectSlot=function(idx){activeSlot=idx;[0,1,2].forEach(i=>document.getElementById('slot-'+i).classList.toggle('active',i===idx));document.getElementById('signupArea').style.display='block';listenSlot(idx);};
+function listenSlot(idx){const key=SLOT_KEYS[idx];onValue(ref(db,key),snap=>{const data=snap.val()||{};currentData={players:data.players||[],waitlist:data.waitlist||[]};if(data.settings){document.getElementById('eventDate').value=data.settings.date||'';document.getElementById('eventPlace').value=data.settings.place||'';document.getElementById('feeAmount').value=data.settings.fee||'';document.getElementById('feeCurrency').value=data.settings.currency||'NTD';}render();setStatus('✓ 即時同步中','conn');},err=>{setStatus('連線失敗，請重新整理','err');});}
+function writeData(){if(activeSlot===null)return;set(ref(db,SLOT_KEYS[activeSlot]),{players:currentData.players,waitlist:currentData.waitlist,settings:{date:document.getElementById('eventDate').value,place:document.getElementById('eventPlace').value.trim(),fee:document.getElementById('feeAmount').value,currency:document.getElementById('feeCurrency').value}});}
+window.saveSettings=writeData;
+window.addPlayer=function(){const input=document.getElementById('nameInput');const name=input.value.trim();if(!name)return;if(currentData.players.includes(name)||currentData.waitlist.includes(name)){input.classList.add('shake');input.style.borderColor='#A32D2D';setTimeout(()=>{input.classList.remove('shake');input.style.borderColor='';},400);input.value='';return;}if(currentData.players.length<10)currentData.players.push(name);else currentData.waitlist.push(name);input.value='';input.focus();writeData();};
+window.removePlayer=function(type,idx){if(type==='main'){currentData.players.splice(idx,1);if(currentData.waitlist.length>0)currentData.players.push(currentData.waitlist.shift());}else currentData.waitlist.splice(idx,1);writeData();};
+window.confirmReset=function(){if(currentData.players.length===0&&currentData.waitlist.length===0)return;if(!confirm('確定要清空本時段名單嗎？'))return;currentData.players=[];currentData.waitlist=[];writeData();};
+function render(){document.getElementById('mainCount').textContent=currentData.players.length;document.getElementById('waitCount').textContent=currentData.waitlist.length;document.getElementById('seatLeft').textContent=Math.max(0,10-currentData.players.length);const ml=document.getElementById('mainList');if(currentData.players.length===0){ml.innerHTML='<div class="empty">尚未有人報名，快來搶位子！</div>';}else{ml.innerHTML=currentData.players.map((p,i)=>`<div class="p-item"><span class="p-suit" style="color:${i%4===1||i%4===2?'#A32D2D':'#2C2C2A'}">${SUITS[i]}</span><span class="p-rank">${RANKS[i]}</span><span class="p-name">${esc(p)}</span>${currentData.players.length===10?'<span class="badge badge-full">滿座</span>':''}<button class="rm-btn" onclick="removePlayer('main',${i})">✕</button></div>`).join('');}const ws=document.getElementById('waitSection');if(currentData.waitlist.length===0){ws.style.display='none';}else{ws.style.display='block';document.getElementById('waitList').innerHTML=currentData.waitlist.map((p,i)=>`<div class="p-item wait"><span class="p-suit" style="color:#bbb">⏳</span><span class="p-rank">${i+1}</span><span class="p-name">${esc(p)}</span><span class="badge badge-wait">候補</span><button class="rm-btn" onclick="removePlayer('wait',${i})">✕</button></div>`).join('');}updatePreview();}
+function updatePreview(){const box=document.getElementById('preview');if(activeSlot===null){box.textContent='請先選擇時段';return;}const date=document.getElementById('eventDate').value;const place=document.getElementById('eventPlace').value.trim();const fee=document.getElementById('feeAmount').value;const curr=document.getElementById('feeCurrency').value;let msg='♠♥♦♣ 揪友娛樂坊 ♠♥♦♣\n🎰 週六娛樂局\n━━━━━━━━━━━━━━━━\n';if(date)msg+=`📅 日期：${fmtDate(date)}\n`;msg+=`🕐 時段：${SLOT_LABELS[activeSlot]}\n`;if(place)msg+=`📍 地點：${place}\n`;if(fee)msg+=`💰 報名費：${Number(fee).toLocaleString()} ${curr}\n`;msg+='━━━━━━━━━━━━━━━━\n';msg+=`🃏 報名名單（${currentData.players.length}/10）\n`;if(currentData.players.length===0)msg+='（尚無人報名）\n';else currentData.players.forEach((p,i)=>{msg+=`${i+1}. ${p}\n`;});if(currentData.players.length<10)msg+=`\n👇 空位剩 ${10-currentData.players.length} 個，手刀來報名！\n`;else msg+='\n✅ 已額滿！\n';if(currentData.waitlist.length>0){msg+='━━━━━━━━━━━━━━━━\n';msg+=`⏳ 候補名單（${currentData.waitlist.length} 人）\n`;currentData.waitlist.forEach((p,i)=>{msg+=`候補${i+1}. ${p}\n`;});}msg+='━━━━━━━━━━━━━━━━\n♠♥♦♣ All in! ♠♥♦♣';box.textContent=msg;}
+window.copyMsg=function(){const text=document.getElementById('preview').textContent;if(text==='請先選擇時段')return;navigator.clipboard.writeText(text).then(()=>{const btn=document.getElementById('copyBtn');btn.classList.add('ok');btn.textContent='✅ 已複製！貼到 LINE 群組吧';setTimeout(()=>{btn.classList.remove('ok');btn.textContent='📋 複製到剪貼簿';},2500);});};
+window.toggleAdmin=function(){document.getElementById('adminPanel').classList.toggle('show');};
+function fmtDate(s){if(!s)return'';const[y,m,d]=s.split('-');return`${parseInt(m)}月${parseInt(d)}日`;}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+document.getElementById('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.addPlayer();});
+</script>
+</body>
+</html>
