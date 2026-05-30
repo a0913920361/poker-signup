@@ -9,30 +9,33 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: #f5f4f0; min-height: 100vh; display: flex; justify-content: center; padding: 1.5rem 1rem 3rem; }
   .card { background: #fff; border-radius: 16px; padding: 1.75rem 1.5rem; width: 100%; max-width: 480px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
-  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header { text-align: center; margin-bottom: 1.25rem; }
   .suits { font-size: 20px; letter-spacing: 6px; margin-bottom: 6px; }
   .s-b { color: #2C2C2A; } .s-r { color: #A32D2D; }
   .org { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: #A32D2D; line-height: 1.15; }
-  .ev-title { font-size: 15px; font-weight: 500; color: #666; margin-top: 4px; letter-spacing: .04em; }
+  .ev-title { font-size: 15px; font-weight: 500; color: #666; margin-top: 4px; }
   .sub { font-size: 11px; color: #aaa; margin-top: 3px; }
   .sec-label { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #999; margin: 1.25rem 0 .5rem; display: flex; align-items: center; gap: 5px; }
-  /* 賽事資訊卡 */
-  .event-info-card { background: #fafaf8; border: 1px solid #ece9e3; border-radius: 12px; padding: .9rem 1rem; margin-bottom: 1rem; display: none; }
-  .event-info-card.has-data { display: block; }
-  .ei-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #444; padding: 3px 0; }
-  .ei-icon { font-size: 15px; min-width: 20px; }
-  .ei-label { color: #aaa; margin-right: 2px; }
-  .ei-val { font-weight: 500; color: #222; }
-  .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .slot { border: 1px solid #ddd; border-radius: 10px; background: #fff; padding: 10px 6px; text-align: center; cursor: pointer; transition: all .15s; -webkit-tap-highlight-color: transparent; }
-  .slot:hover { background: #fafaf8; }
-  .slot.active { border: 2px solid #A32D2D; }
-  .slot-time { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: #222; display: block; }
-  .slot.active .slot-time { color: #A32D2D; }
-  .slot-tag { font-size: 11px; color: #aaa; display: block; margin-top: 2px; }
-  .slot.active .slot-tag { color: #A32D2D; }
-  .slot-count { font-size: 10px; color: #bbb; display: block; margin-top: 3px; }
-  .slot.active .slot-count { color: #A32D2D; }
+  /* 賽事資訊卡 — 常駐顯示 */
+  .event-banner { background: #fff8f5; border: 1px solid #f0ddd5; border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1.1rem; }
+  .eb-title { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #c0714f; margin-bottom: .55rem; }
+  .eb-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #444; padding: 2px 0; }
+  .eb-icon { font-size: 14px; min-width: 18px; }
+  .eb-val { font-weight: 500; color: #222; }
+  .eb-empty { font-size: 12px; color: #ccc; text-align: center; padding: 4px 0; }
+  /* 各場次資訊小卡 */
+  .slot-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1rem; }
+  .slot-card { border: 1px solid #ddd; border-radius: 10px; background: #fff; padding: 10px 8px; text-align: center; cursor: pointer; transition: all .15s; -webkit-tap-highlight-color: transparent; }
+  .slot-card:hover { background: #fafaf8; }
+  .slot-card.active { border: 2px solid #A32D2D; }
+  .sc-time { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: #222; display: block; }
+  .slot-card.active .sc-time { color: #A32D2D; }
+  .sc-tag { font-size: 10px; color: #aaa; display: block; margin-top: 2px; }
+  .slot-card.active .sc-tag { color: #A32D2D; }
+  .sc-info { font-size: 10px; color: #888; display: block; margin-top: 5px; line-height: 1.5; border-top: 1px solid #f0f0f0; padding-top: 5px; text-align: left; }
+  .slot-card.active .sc-info { color: #A32D2D; border-top-color: #f5d5cc; }
+  .sc-count { display: inline-block; margin-top: 4px; font-size: 10px; color: #bbb; }
+  .slot-card.active .sc-count { color: #A32D2D; }
   .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .field { display: flex; flex-direction: column; gap: 4px; }
   .field label { font-size: 12px; color: #666; }
@@ -66,9 +69,9 @@
   .divider { border: none; border-top: 1px solid #eee; margin: 1.25rem 0; }
   .preview { background: #f5f4f0; border: 1px solid #e5e3de; border-radius: 10px; padding: 13px 15px; font-size: 13px; line-height: 1.9; color: #333; white-space: pre-wrap; font-family: 'DM Sans', sans-serif; min-height: 80px; max-height: 320px; overflow-y: auto; }
   .btn-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 10px; }
-  .btn-copy { height: 44px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: #222; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: background .15s; -webkit-tap-highlight-color: transparent; }
+  .btn-copy { height: 44px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: #222; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: background .15s; }
   .btn-copy:hover { background: #f5f4f0; } .btn-copy.ok { color: #3B6D11; border-color: #639922; }
-  .btn-reset { height: 44px; padding: 0 14px; border: 1px solid #eee; border-radius: 8px; background: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #aaa; cursor: pointer; white-space: nowrap; transition: all .15s; -webkit-tap-highlight-color: transparent; }
+  .btn-reset { height: 44px; padding: 0 14px; border: 1px solid #eee; border-radius: 8px; background: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #aaa; cursor: pointer; white-space: nowrap; transition: all .15s; }
   .btn-reset:hover { color: #A32D2D; border-color: #A32D2D; background: #fcebeb; }
   .status-bar { text-align: center; font-size: 11px; color: #bbb; margin-top: 1rem; }
   .status-bar.conn { color: #3B6D11; } .status-bar.err { color: #A32D2D; }
@@ -93,7 +96,6 @@
   .pw-box input { flex:1; height:38px; padding:0 10px; border:1px solid #ddd; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:14px; color:#222; outline:none; }
   .pw-box input:focus { border-color:#A32D2D; }
   .pw-box button { height:38px; padding:0 14px; border:1px solid #ddd; border-radius:8px; background:#fff; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; color:#222; cursor:pointer; }
-  .pw-box button:hover { background:#f5f4f0; }
   .pw-hint { font-size:11px; color:#A32D2D; margin-top:4px; display:none; }
   .admin-slot-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:.75rem; }
   .ast { height:34px; border:1px solid #ddd; border-radius:8px; background:#fff; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; color:#888; cursor:pointer; transition:all .15s; }
@@ -109,18 +111,32 @@
     <div class="sub">Texas Hold'em Tournament</div>
   </div>
 
-  <!-- 賽事資訊顯示區（時段按鈕上方） -->
-  <div class="event-info-card" id="eventInfoCard">
-    <div class="ei-row" id="eiDate" style="display:none"><span class="ei-icon">📅</span><span class="ei-label">日期</span><span class="ei-val" id="eiDateVal"></span></div>
-    <div class="ei-row" id="eiPlace" style="display:none"><span class="ei-icon">📍</span><span class="ei-label">地點</span><span class="ei-val" id="eiPlaceVal"></span></div>
-    <div class="ei-row" id="eiFee" style="display:none"><span class="ei-icon">💰</span><span class="ei-label">報名費</span><span class="ei-val" id="eiFeeVal"></span></div>
+  <!-- 賽事總資訊（取第一筆有設定的場次共用資料，如日期地點） -->
+  <div class="event-banner" id="eventBanner">
+    <div class="eb-title">♠ 本週賽事資訊</div>
+    <div id="ebContent"><div class="eb-empty">主辦人尚未設定賽事資訊</div></div>
   </div>
 
-  <div class="sec-label">🕐 選擇時段</div>
-  <div class="slots">
-    <div class="slot" id="slot-0" onclick="selectSlot(0)"><span class="slot-time">下午 3:00</span><span class="slot-tag">第一場</span><span class="slot-count" id="sc-0"></span></div>
-    <div class="slot" id="slot-1" onclick="selectSlot(1)"><span class="slot-time">下午 6:00</span><span class="slot-tag">第二場</span><span class="slot-count" id="sc-1"></span></div>
-    <div class="slot" id="slot-2" onclick="selectSlot(2)"><span class="slot-time">下午 9:00</span><span class="slot-tag">第三場</span><span class="slot-count" id="sc-2"></span></div>
+  <div class="sec-label">🕐 選擇時段報名</div>
+  <div class="slot-cards">
+    <div class="slot-card" id="slot-0" onclick="selectSlot(0)">
+      <span class="sc-time">下午 3:00</span>
+      <span class="sc-tag">第一場</span>
+      <span class="sc-info" id="si-0"></span>
+      <span class="sc-count" id="sc-0"></span>
+    </div>
+    <div class="slot-card" id="slot-1" onclick="selectSlot(1)">
+      <span class="sc-time">下午 6:00</span>
+      <span class="sc-tag">第二場</span>
+      <span class="sc-info" id="si-1"></span>
+      <span class="sc-count" id="sc-1"></span>
+    </div>
+    <div class="slot-card" id="slot-2" onclick="selectSlot(2)">
+      <span class="sc-time">下午 9:00</span>
+      <span class="sc-tag">第三場</span>
+      <span class="sc-info" id="si-2"></span>
+      <span class="sc-count" id="sc-2"></span>
+    </div>
   </div>
 
   <div id="signupArea" style="display:none">
@@ -148,6 +164,7 @@
       <button class="btn-reset" onclick="confirmReset()">🔄 清空名單</button>
     </div>
   </div>
+
   <div class="status-bar" id="statusBar">連線中...</div>
   <div class="admin-toggle"><button onclick="toggleAdmin()">⚙ 主辦人設定</button></div>
   <div class="admin-panel" id="adminPanel">
@@ -179,6 +196,7 @@
     </div>
   </div>
 </div>
+
 <div class="overlay" id="overlay" onclick="hideToast()"></div>
 <div class="toast" id="toast">
   <span class="toast-icon" id="toastIcon">🎉</span>
@@ -186,6 +204,7 @@
   <span class="toast-name" id="toastName"></span>
   <span class="toast-sub" id="toastSub"></span>
 </div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -212,50 +231,57 @@ function setStatus(msg,type=''){const el=document.getElementById('statusBar');el
 function showToast(icon,title,name,sub){document.getElementById('toastIcon').textContent=icon;document.getElementById('toastTitle').textContent=title;document.getElementById('toastName').textContent=name;document.getElementById('toastSub').textContent=sub;document.getElementById('toast').classList.add('show');document.getElementById('overlay').classList.add('show');setTimeout(hideToast,3000);}
 window.hideToast=function(){document.getElementById('toast').classList.remove('show');document.getElementById('overlay').classList.remove('show');};
 
-// 預載所有時段資料（顯示人數 + 資訊卡）
 [0,1,2].forEach(i=>{
   onValue(ref(db,SLOT_KEYS[i]),snap=>{
     allSlotData[i]=snap.val()||{};
-    updateSlotCount(i);
+    updateSlotCard(i);
+    updateEventBanner();
     if(activeSlot===i){
       currentData={players:allSlotData[i].players||[],waitlist:allSlotData[i].waitlist||[]};
-      loadSettingsToForm(allSlotData[i].settings);
       render();
-      updateInfoCard();
     }
-    if(adminSlot===i && adminUnlocked) loadSettingsToForm(allSlotData[i].settings);
-  });
+    if(adminSlot===i&&adminUnlocked)loadSettingsToForm(allSlotData[i].settings);
+    setStatus('✓ 即時同步中','conn');
+  },()=>setStatus('連線失敗，請重新整理','err'));
 });
 
-function updateSlotCount(i){
-  const d=allSlotData[i];
-  const p=(d.players||[]).length;
-  const el=document.getElementById('sc-'+i);
-  if(p===0){el.textContent='';}
-  else if(p>=10){el.textContent='已額滿';}
-  else{el.textContent=`${p}/10 人`;}
+function updateEventBanner(){
+  // 取所有場次中共用的資訊（日期/地點/費用）顯示在上方大卡
+  // 優先顯示第一個有設定的場次
+  let found=null;
+  for(let i=0;i<3;i++){if(allSlotData[i]?.settings?.date||allSlotData[i]?.settings?.place||allSlotData[i]?.settings?.fee){found=allSlotData[i].settings;break;}}
+  const box=document.getElementById('ebContent');
+  if(!found){box.innerHTML='<div class="eb-empty">主辦人尚未設定賽事資訊</div>';return;}
+  let html='';
+  if(found.date)html+=`<div class="eb-row"><span class="eb-icon">📅</span><span class="eb-val">${fmtDate(found.date)}</span></div>`;
+  if(found.place)html+=`<div class="eb-row"><span class="eb-icon">📍</span><span class="eb-val">${esc(found.place)}</span></div>`;
+  if(found.fee)html+=`<div class="eb-row"><span class="eb-icon">💰</span><span class="eb-val">報名費 ${Number(found.fee).toLocaleString()} ${found.currency||'NTD'}</span></div>`;
+  box.innerHTML=html||'<div class="eb-empty">主辦人尚未設定賽事資訊</div>';
 }
 
-function updateInfoCard(){
-  if(activeSlot===null)return;
-  const s=allSlotData[activeSlot]?.settings||{};
-  const card=document.getElementById('eventInfoCard');
-  let hasAny=false;
-  if(s.date){document.getElementById('eiDateVal').textContent=fmtDate(s.date);document.getElementById('eiDate').style.display='flex';hasAny=true;}
-  else{document.getElementById('eiDate').style.display='none';}
-  if(s.place){document.getElementById('eiPlaceVal').textContent=s.place;document.getElementById('eiPlace').style.display='flex';hasAny=true;}
-  else{document.getElementById('eiPlace').style.display='none';}
-  if(s.fee){document.getElementById('eiFeeVal').textContent=`${Number(s.fee).toLocaleString()} ${s.currency||'NTD'}`;document.getElementById('eiFee').style.display='flex';hasAny=true;}
-  else{document.getElementById('eiFee').style.display='none';}
-  card.classList.toggle('has-data',hasAny);
+function updateSlotCard(i){
+  const d=allSlotData[i];
+  const s=d.settings||{};
+  const p=(d.players||[]).length;
+  // 小卡內資訊
+  const si=document.getElementById('si-'+i);
+  let info='';
+  if(s.place)info+=`📍 ${esc(s.place)}\n`;
+  if(s.fee)info+=`💰 ${Number(s.fee).toLocaleString()} ${s.currency||'NTD'}`;
+  si.textContent=info;
+  si.style.display=info?'block':'none';
+  // 人數
+  const sc=document.getElementById('sc-'+i);
+  if(p===0)sc.textContent='';
+  else if(p>=10)sc.textContent='🔴 已額滿';
+  else sc.textContent=`${p}/10 人`;
 }
 
 function loadSettingsToForm(s){
-  if(!s)return;
-  document.getElementById('eventDate').value=s.date||'';
-  document.getElementById('eventPlace').value=s.place||'';
-  document.getElementById('feeAmount').value=s.fee||'';
-  document.getElementById('feeCurrency').value=s.currency||'NTD';
+  document.getElementById('eventDate').value=s?.date||'';
+  document.getElementById('eventPlace').value=s?.place||'';
+  document.getElementById('feeAmount').value=s?.fee||'';
+  document.getElementById('feeCurrency').value=s?.currency||'NTD';
 }
 
 window.toggleAdmin=function(){
@@ -268,17 +294,8 @@ window.toggleAdmin=function(){
 
 window.checkPw=function(){
   const val=document.getElementById('pwInput').value;
-  if(val===ADMIN_PW){
-    adminUnlocked=true;
-    document.getElementById('pwSection').style.display='none';
-    document.getElementById('adminContent').style.display='block';
-    switchAdminSlot(0);
-  } else {
-    document.getElementById('pwHint').style.display='block';
-    document.getElementById('pwInput').value='';
-    document.getElementById('pwInput').classList.add('shake');
-    setTimeout(()=>document.getElementById('pwInput').classList.remove('shake'),400);
-  }
+  if(val===ADMIN_PW){adminUnlocked=true;document.getElementById('pwSection').style.display='none';document.getElementById('adminContent').style.display='block';switchAdminSlot(0);}
+  else{document.getElementById('pwHint').style.display='block';document.getElementById('pwInput').value='';document.getElementById('pwInput').classList.add('shake');setTimeout(()=>document.getElementById('pwInput').classList.remove('shake'),400);}
 };
 
 window.switchAdminSlot=function(idx){
@@ -292,32 +309,14 @@ window.selectSlot=function(idx){
   [0,1,2].forEach(i=>document.getElementById('slot-'+i).classList.toggle('active',i===idx));
   document.getElementById('signupArea').style.display='block';
   currentData={players:allSlotData[idx].players||[],waitlist:allSlotData[idx].waitlist||[]};
-  loadSettingsToForm(allSlotData[idx]?.settings);
   render();
-  updateInfoCard();
-  setStatus('✓ 即時同步中','conn');
 };
-
-function writeData(){
-  if(activeSlot===null&&!adminUnlocked)return;
-  const targetSlot=adminUnlocked?adminSlot:activeSlot;
-  const existing=allSlotData[targetSlot]||{};
-  set(ref(db,SLOT_KEYS[targetSlot]),{
-    players:targetSlot===activeSlot?currentData.players:(existing.players||[]),
-    waitlist:targetSlot===activeSlot?currentData.waitlist:(existing.waitlist||[]),
-    settings:{
-      date:document.getElementById('eventDate').value,
-      place:document.getElementById('eventPlace').value.trim(),
-      fee:document.getElementById('feeAmount').value,
-      currency:document.getElementById('feeCurrency').value
-    }
-  });
-}
 
 window.saveSettings=function(){
   if(!adminUnlocked)return;
-  writeData();
-  updateInfoCard();
+  const s={date:document.getElementById('eventDate').value,place:document.getElementById('eventPlace').value.trim(),fee:document.getElementById('feeAmount').value,currency:document.getElementById('feeCurrency').value};
+  const existing=allSlotData[adminSlot]||{};
+  set(ref(db,SLOT_KEYS[adminSlot]),{players:existing.players||[],waitlist:existing.waitlist||[],settings:s});
 };
 
 window.addPlayer=function(){
@@ -336,8 +335,8 @@ window.addPlayer=function(){
   input.value='';input.focus();
   const s=allSlotData[activeSlot]?.settings||{};
   set(ref(db,SLOT_KEYS[activeSlot]),{players:currentData.players,waitlist:currentData.waitlist,settings:s});
-  if(!isWait){showToast('🎉','報名成功！',name,`你是第 ${currentData.players.length} 位，座位已保留 ♠`);}
-  else{showToast('⏳','已加入候補',name,`目前額滿，你是第 ${currentData.waitlist.length} 順位候補\n有人退出會自動遞補！`);}
+  if(!isWait)showToast('🎉','報名成功！',name,`你是第 ${currentData.players.length} 位，座位已保留 ♠`);
+  else showToast('⏳','已加入候補',name,`目前額滿，你是第 ${currentData.waitlist.length} 順位候補\n有人退出會自動遞補！`);
 };
 
 window.removePlayer=function(type,idx){
@@ -350,7 +349,6 @@ window.removePlayer=function(type,idx){
 window.confirmReset=function(){
   if(currentData.players.length===0&&currentData.waitlist.length===0)return;
   if(!confirm('確定要清空本時段名單嗎？'))return;
-  currentData.players=[];currentData.waitlist=[];
   const s=allSlotData[activeSlot]?.settings||{};
   set(ref(db,SLOT_KEYS[activeSlot]),{players:[],waitlist:[],settings:s});
 };
