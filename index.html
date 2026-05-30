@@ -16,14 +16,11 @@
   .ev-title { font-size: 15px; font-weight: 500; color: #666; margin-top: 4px; }
   .sub { font-size: 11px; color: #aaa; margin-top: 3px; }
   .sec-label { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #999; margin: 1.25rem 0 .5rem; display: flex; align-items: center; gap: 5px; }
-  /* 賽事資訊卡 — 常駐顯示 */
   .event-banner { background: #fff8f5; border: 1px solid #f0ddd5; border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1.1rem; }
   .eb-title { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #c0714f; margin-bottom: .55rem; }
   .eb-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #444; padding: 2px 0; }
-  .eb-icon { font-size: 14px; min-width: 18px; }
   .eb-val { font-weight: 500; color: #222; }
   .eb-empty { font-size: 12px; color: #ccc; text-align: center; padding: 4px 0; }
-  /* 各場次資訊小卡 */
   .slot-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1rem; }
   .slot-card { border: 1px solid #ddd; border-radius: 10px; background: #fff; padding: 10px 8px; text-align: center; cursor: pointer; transition: all .15s; -webkit-tap-highlight-color: transparent; }
   .slot-card:hover { background: #fafaf8; }
@@ -110,35 +107,16 @@
     <div class="ev-title">週六娛樂局</div>
     <div class="sub">Texas Hold'em Tournament</div>
   </div>
-
-  <!-- 賽事總資訊（取第一筆有設定的場次共用資料，如日期地點） -->
   <div class="event-banner" id="eventBanner">
     <div class="eb-title">♠ 本週賽事資訊</div>
     <div id="ebContent"><div class="eb-empty">主辦人尚未設定賽事資訊</div></div>
   </div>
-
   <div class="sec-label">🕐 選擇時段報名</div>
   <div class="slot-cards">
-    <div class="slot-card" id="slot-0" onclick="selectSlot(0)">
-      <span class="sc-time">下午 3:00</span>
-      <span class="sc-tag">第一場</span>
-      <span class="sc-info" id="si-0"></span>
-      <span class="sc-count" id="sc-0"></span>
-    </div>
-    <div class="slot-card" id="slot-1" onclick="selectSlot(1)">
-      <span class="sc-time">下午 6:00</span>
-      <span class="sc-tag">第二場</span>
-      <span class="sc-info" id="si-1"></span>
-      <span class="sc-count" id="sc-1"></span>
-    </div>
-    <div class="slot-card" id="slot-2" onclick="selectSlot(2)">
-      <span class="sc-time">下午 9:00</span>
-      <span class="sc-tag">第三場</span>
-      <span class="sc-info" id="si-2"></span>
-      <span class="sc-count" id="sc-2"></span>
-    </div>
+    <div class="slot-card" id="slot-0" onclick="selectSlot(0)"><span class="sc-time">下午 3:00</span><span class="sc-tag">第一場</span><span class="sc-info" id="si-0" style="display:none"></span><span class="sc-count" id="sc-0"></span></div>
+    <div class="slot-card" id="slot-1" onclick="selectSlot(1)"><span class="sc-time">下午 6:00</span><span class="sc-tag">第二場</span><span class="sc-info" id="si-1" style="display:none"></span><span class="sc-count" id="sc-1"></span></div>
+    <div class="slot-card" id="slot-2" onclick="selectSlot(2)"><span class="sc-time">下午 9:00</span><span class="sc-tag">第三場</span><span class="sc-info" id="si-2" style="display:none"></span><span class="sc-count" id="sc-2"></span></div>
   </div>
-
   <div id="signupArea" style="display:none">
     <div class="sec-label">👤 玩家報名</div>
     <div class="input-row">
@@ -164,16 +142,12 @@
       <button class="btn-reset" onclick="confirmReset()">🔄 清空名單</button>
     </div>
   </div>
-
   <div class="status-bar" id="statusBar">連線中...</div>
   <div class="admin-toggle"><button onclick="toggleAdmin()">⚙ 主辦人設定</button></div>
   <div class="admin-panel" id="adminPanel">
     <div id="pwSection">
       <div style="font-size:13px;color:#888;margin-bottom:6px">請輸入主辦人密碼</div>
-      <div class="pw-box">
-        <input type="password" id="pwInput" placeholder="密碼" onkeydown="if(event.key==='Enter')checkPw()" />
-        <button onclick="checkPw()">確認</button>
-      </div>
+      <div class="pw-box"><input type="password" id="pwInput" placeholder="密碼" onkeydown="if(event.key==='Enter')checkPw()" /><button onclick="checkPw()">確認</button></div>
       <div class="pw-hint" id="pwHint">密碼錯誤，請再試一次</div>
     </div>
     <div id="adminContent" style="display:none">
@@ -196,7 +170,6 @@
     </div>
   </div>
 </div>
-
 <div class="overlay" id="overlay" onclick="hideToast()"></div>
 <div class="toast" id="toast">
   <span class="toast-icon" id="toastIcon">🎉</span>
@@ -204,7 +177,6 @@
   <span class="toast-name" id="toastName"></span>
   <span class="toast-sub" id="toastSub"></span>
 </div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -219,62 +191,56 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const WORKER_URL = 'https://line-notify.a0913920361.workers.dev';
 const SUITS=['♠','♥','♦','♣','♠','♥','♦','♣','♠','♥'];
 const RANKS=['A','K','Q','J','10','9','8','7','6','5'];
 const SLOT_LABELS=['下午 3:00（第一場）','下午 6:00（第二場）','下午 9:00（第三場）'];
 const SLOT_KEYS=['slot0','slot1','slot2'];
 const ADMIN_PW='4560603';
-let activeSlot=null, adminSlot=0, currentData={players:[],waitlist:[]}, adminUnlocked=false;
+let activeSlot=null,adminSlot=0,currentData={players:[],waitlist:[]},adminUnlocked=false;
 let allSlotData=[{},{},{}];
 
 function setStatus(msg,type=''){const el=document.getElementById('statusBar');el.textContent=msg;el.className='status-bar '+type;}
 function showToast(icon,title,name,sub){document.getElementById('toastIcon').textContent=icon;document.getElementById('toastTitle').textContent=title;document.getElementById('toastName').textContent=name;document.getElementById('toastSub').textContent=sub;document.getElementById('toast').classList.add('show');document.getElementById('overlay').classList.add('show');setTimeout(hideToast,3000);}
 window.hideToast=function(){document.getElementById('toast').classList.remove('show');document.getElementById('overlay').classList.remove('show');};
 
+async function sendLineMsg(message){
+  try{await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message})});}
+  catch(e){console.log('LINE msg failed',e);}
+}
+
 [0,1,2].forEach(i=>{
   onValue(ref(db,SLOT_KEYS[i]),snap=>{
     allSlotData[i]=snap.val()||{};
     updateSlotCard(i);
     updateEventBanner();
-    if(activeSlot===i){
-      currentData={players:allSlotData[i].players||[],waitlist:allSlotData[i].waitlist||[]};
-      render();
-    }
+    if(activeSlot===i){currentData={players:allSlotData[i].players||[],waitlist:allSlotData[i].waitlist||[]};render();}
     if(adminSlot===i&&adminUnlocked)loadSettingsToForm(allSlotData[i].settings);
     setStatus('✓ 即時同步中','conn');
   },()=>setStatus('連線失敗，請重新整理','err'));
 });
 
 function updateEventBanner(){
-  // 取所有場次中共用的資訊（日期/地點/費用）顯示在上方大卡
-  // 優先顯示第一個有設定的場次
   let found=null;
   for(let i=0;i<3;i++){if(allSlotData[i]?.settings?.date||allSlotData[i]?.settings?.place||allSlotData[i]?.settings?.fee){found=allSlotData[i].settings;break;}}
   const box=document.getElementById('ebContent');
   if(!found){box.innerHTML='<div class="eb-empty">主辦人尚未設定賽事資訊</div>';return;}
   let html='';
-  if(found.date)html+=`<div class="eb-row"><span class="eb-icon">📅</span><span class="eb-val">${fmtDate(found.date)}</span></div>`;
-  if(found.place)html+=`<div class="eb-row"><span class="eb-icon">📍</span><span class="eb-val">${esc(found.place)}</span></div>`;
-  if(found.fee)html+=`<div class="eb-row"><span class="eb-icon">💰</span><span class="eb-val">報名費 ${Number(found.fee).toLocaleString()} ${found.currency||'NTD'}</span></div>`;
+  if(found.date)html+=`<div class="eb-row"><span>📅</span><span class="eb-val">${fmtDate(found.date)}</span></div>`;
+  if(found.place)html+=`<div class="eb-row"><span>📍</span><span class="eb-val">${esc(found.place)}</span></div>`;
+  if(found.fee)html+=`<div class="eb-row"><span>💰</span><span class="eb-val">報名費 ${Number(found.fee).toLocaleString()} ${found.currency||'NTD'}</span></div>`;
   box.innerHTML=html||'<div class="eb-empty">主辦人尚未設定賽事資訊</div>';
 }
 
 function updateSlotCard(i){
-  const d=allSlotData[i];
-  const s=d.settings||{};
-  const p=(d.players||[]).length;
-  // 小卡內資訊
+  const d=allSlotData[i];const s=d.settings||{};const p=(d.players||[]).length;
   const si=document.getElementById('si-'+i);
   let info='';
   if(s.place)info+=`📍 ${esc(s.place)}\n`;
   if(s.fee)info+=`💰 ${Number(s.fee).toLocaleString()} ${s.currency||'NTD'}`;
-  si.textContent=info;
-  si.style.display=info?'block':'none';
-  // 人數
+  si.textContent=info;si.style.display=info?'block':'none';
   const sc=document.getElementById('sc-'+i);
-  if(p===0)sc.textContent='';
-  else if(p>=10)sc.textContent='🔴 已額滿';
-  else sc.textContent=`${p}/10 人`;
+  if(p===0)sc.textContent='';else if(p>=10)sc.textContent='🔴 已額滿';else sc.textContent=`${p}/10 人`;
 }
 
 function loadSettingsToForm(s){
@@ -299,14 +265,12 @@ window.checkPw=function(){
 };
 
 window.switchAdminSlot=function(idx){
-  adminSlot=idx;
-  [0,1,2].forEach(i=>document.getElementById('ast-'+i).classList.toggle('active',i===idx));
+  adminSlot=idx;[0,1,2].forEach(i=>document.getElementById('ast-'+i).classList.toggle('active',i===idx));
   loadSettingsToForm(allSlotData[idx]?.settings);
 };
 
 window.selectSlot=function(idx){
-  activeSlot=idx;
-  [0,1,2].forEach(i=>document.getElementById('slot-'+i).classList.toggle('active',i===idx));
+  activeSlot=idx;[0,1,2].forEach(i=>document.getElementById('slot-'+i).classList.toggle('active',i===idx));
   document.getElementById('signupArea').style.display='block';
   currentData={players:allSlotData[idx].players||[],waitlist:allSlotData[idx].waitlist||[]};
   render();
@@ -335,8 +299,22 @@ window.addPlayer=function(){
   input.value='';input.focus();
   const s=allSlotData[activeSlot]?.settings||{};
   set(ref(db,SLOT_KEYS[activeSlot]),{players:currentData.players,waitlist:currentData.waitlist,settings:s});
-  if(!isWait)showToast('🎉','報名成功！',name,`你是第 ${currentData.players.length} 位，座位已保留 ♠`);
-  else showToast('⏳','已加入候補',name,`目前額滿，你是第 ${currentData.waitlist.length} 順位候補\n有人退出會自動遞補！`);
+
+  const slotName=['第一場','第二場','第三場'][activeSlot];
+  const totalMain=currentData.players.length;
+  const leftSeats=Math.max(0,10-totalMain);
+  let lineMsg='';
+  if(!isWait){
+    lineMsg=`🎉 ${name} 已報名${slotName}！\n目前 ${totalMain}/10 人`;
+    if(leftSeats>0)lineMsg+=`，還有 ${leftSeats} 個空位`;
+    else lineMsg+=`，已額滿！`;
+    showToast('🎉','報名成功！',name,`你是第 ${totalMain} 位，座位已保留 ♠`);
+  }else{
+    const waitPos=currentData.waitlist.length;
+    lineMsg=`⏳ ${name} 加入${slotName}候補（第 ${waitPos} 順位）\n正式名單已額滿`;
+    showToast('⏳','已加入候補',name,`目前額滿，你是第 ${waitPos} 順位候補\n有人退出會自動遞補！`);
+  }
+  sendLineMsg(lineMsg);
 };
 
 window.removePlayer=function(type,idx){
