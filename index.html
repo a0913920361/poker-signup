@@ -61,7 +61,7 @@
   .p-item.wait .p-name { color: #888; }
   .badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; }
   .badge-full { background: #eaf3de; color: #3B6D11; } .badge-wait { background: #faeeda; color: #854F0B; }
-  .rm-btn { background: none; border: none; cursor: pointer; color: #ccc; font-size: 16px; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: all .15s; }
+  .rm-btn { background: none; border: none; cursor: pointer; color: #ccc; font-size: 15px; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: all .15s; }
   .rm-btn:hover { color: #A32D2D; background: #fcebeb; }
   .divider { border: none; border-top: 1px solid #eee; margin: 1.25rem 0; }
   .preview { background: #f5f4f0; border: 1px solid #e5e3de; border-radius: 10px; padding: 13px 15px; font-size: 13px; line-height: 1.9; color: #333; white-space: pre-wrap; font-family: 'DM Sans', sans-serif; min-height: 80px; max-height: 320px; overflow-y: auto; }
@@ -82,13 +82,22 @@
   .admin-panel .field { margin-bottom: .5rem; }
   .admin-panel .field label { font-size: 12px; color: #888; }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 998; opacity: 0; pointer-events: none; transition: opacity .2s; }
-  .overlay.show { opacity: 1; }
-  .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.88); background: #fff; border-radius: 20px; padding: 2rem 2.5rem; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.18); z-index: 999; opacity: 0; pointer-events: none; transition: all .28s cubic-bezier(.34,1.56,.64,1); min-width: 240px; }
-  .toast.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+  .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.88); background: #fff; border-radius: 20px; padding: 2rem 2.5rem; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.18); z-index: 999; opacity: 0; pointer-events: none; transition: all .28s cubic-bezier(.34,1.56,.64,1); min-width: 240px; max-width: 320px; width: 90%; }
+  .toast.show { opacity: 1; transform: translate(-50%,-50%) scale(1); pointer-events: auto; }
   .toast-icon { font-size: 44px; display: block; margin-bottom: 10px; }
   .toast-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #222; display: block; margin-bottom: 5px; }
   .toast-name { font-size: 16px; font-weight: 500; color: #A32D2D; display: block; margin-bottom: 6px; }
   .toast-sub { font-size: 13px; color: #888; display: block; line-height: 1.6; white-space: pre-line; }
+  .toast-input { width: 100%; height: 38px; padding: 0 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #222; outline: none; margin-top: 10px; }
+  .toast-input:focus { border-color: #A32D2D; }
+  .toast-btns { display: flex; gap: 8px; margin-top: 10px; }
+  .toast-btn { flex: 1; height: 38px; border-radius: 8px; border: 1px solid #ddd; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; }
+  .toast-btn.danger { border-color: #A32D2D; color: #A32D2D; }
+  .toast-btn.danger:hover { background: #fcebeb; }
+  .toast-btn.cancel { color: #aaa; }
+  .toast-btn.cancel:hover { background: #f5f4f0; }
+  .toast-hint { font-size: 11px; color: #A32D2D; margin-top: 5px; display: none; }
   .pw-box { display:flex; gap:8px; margin-top:.5rem; }
   .pw-box input { flex:1; height:38px; padding:0 10px; border:1px solid #ddd; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:14px; color:#222; outline:none; }
   .pw-box input:focus { border-color:#A32D2D; }
@@ -170,13 +179,22 @@
     </div>
   </div>
 </div>
-<div class="overlay" id="overlay" onclick="hideToast()"></div>
+
+<!-- 確認取消彈窗 -->
+<div class="overlay" id="overlay" onclick="cancelRemove()"></div>
 <div class="toast" id="toast">
   <span class="toast-icon" id="toastIcon">🎉</span>
-  <span class="toast-title" id="toastTitle">報名成功！</span>
+  <span class="toast-title" id="toastTitle"></span>
   <span class="toast-name" id="toastName"></span>
   <span class="toast-sub" id="toastSub"></span>
+  <input type="text" class="toast-input" id="toastInput" placeholder="" style="display:none" />
+  <div class="toast-hint" id="toastHint">名字不符，請重新輸入</div>
+  <div class="toast-btns" id="toastBtns" style="display:none">
+    <button class="toast-btn cancel" onclick="cancelRemove()">取消</button>
+    <button class="toast-btn danger" onclick="confirmRemove()">確認取消報名</button>
+  </div>
 </div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -191,7 +209,6 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const WORKER_URL = 'https://line-notify.a0913920361.workers.dev';
 const SUITS=['♠','♥','♦','♣','♠','♥','♦','♣','♠','♥'];
 const RANKS=['A','K','Q','J','10','9','8','7','6','5'];
 const SLOT_LABELS=['下午 3:00（第一場）','下午 6:00（第二場）','下午 9:00（第三場）'];
@@ -199,15 +216,78 @@ const SLOT_KEYS=['slot0','slot1','slot2'];
 const ADMIN_PW='4560603';
 let activeSlot=null,adminSlot=0,currentData={players:[],waitlist:[]},adminUnlocked=false;
 let allSlotData=[{},{},{}];
+let pendingRemove=null; // {type, idx, name}
 
 function setStatus(msg,type=''){const el=document.getElementById('statusBar');el.textContent=msg;el.className='status-bar '+type;}
-function showToast(icon,title,name,sub){document.getElementById('toastIcon').textContent=icon;document.getElementById('toastTitle').textContent=title;document.getElementById('toastName').textContent=name;document.getElementById('toastSub').textContent=sub;document.getElementById('toast').classList.add('show');document.getElementById('overlay').classList.add('show');setTimeout(hideToast,3000);}
-window.hideToast=function(){document.getElementById('toast').classList.remove('show');document.getElementById('overlay').classList.remove('show');};
 
-async function sendLineMsg(message){
-  try{await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message})});}
-  catch(e){console.log('LINE msg failed',e);}
+function showToast(icon,title,name,sub){
+  document.getElementById('toastIcon').textContent=icon;
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastName').textContent=name;
+  document.getElementById('toastSub').textContent=sub;
+  document.getElementById('toastInput').style.display='none';
+  document.getElementById('toastBtns').style.display='none';
+  document.getElementById('toastHint').style.display='none';
+  document.getElementById('toast').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(hideToast,3000);
 }
+
+function showRemoveConfirm(type, idx, name) {
+  pendingRemove = {type, idx, name};
+  document.getElementById('toastIcon').textContent='❓';
+  document.getElementById('toastTitle').textContent='取消報名確認';
+  document.getElementById('toastName').textContent=name;
+  if(adminUnlocked) {
+    document.getElementById('toastSub').textContent='主辦人模式，直接確認取消？';
+    document.getElementById('toastInput').style.display='none';
+  } else {
+    document.getElementById('toastSub').textContent='請輸入你的名字以確認取消報名';
+    const inp = document.getElementById('toastInput');
+    inp.style.display='block';
+    inp.value='';
+    inp.placeholder='輸入你的名字...';
+    setTimeout(()=>inp.focus(), 100);
+  }
+  document.getElementById('toastHint').style.display='none';
+  document.getElementById('toastBtns').style.display='flex';
+  document.getElementById('toast').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+}
+
+window.hideToast = function(){
+  document.getElementById('toast').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  pendingRemove=null;
+};
+
+window.cancelRemove = function(){
+  window.hideToast();
+};
+
+window.confirmRemove = function(){
+  if(!pendingRemove) return;
+  if(!adminUnlocked) {
+    const inp = document.getElementById('toastInput').value.trim();
+    if(inp !== pendingRemove.name) {
+      document.getElementById('toastHint').style.display='block';
+      document.getElementById('toastInput').value='';
+      document.getElementById('toastInput').classList.add('shake');
+      setTimeout(()=>document.getElementById('toastInput').classList.remove('shake'),400);
+      return;
+    }
+  }
+  const {type, idx} = pendingRemove;
+  if(type==='main'){
+    currentData.players.splice(idx,1);
+    if(currentData.waitlist.length>0) currentData.players.push(currentData.waitlist.shift());
+  } else {
+    currentData.waitlist.splice(idx,1);
+  }
+  const s=allSlotData[activeSlot]?.settings||{};
+  set(ref(db,SLOT_KEYS[activeSlot]),{players:currentData.players,waitlist:currentData.waitlist,settings:s});
+  window.hideToast();
+};
 
 [0,1,2].forEach(i=>{
   onValue(ref(db,SLOT_KEYS[i]),snap=>{
@@ -299,33 +379,18 @@ window.addPlayer=function(){
   input.value='';input.focus();
   const s=allSlotData[activeSlot]?.settings||{};
   set(ref(db,SLOT_KEYS[activeSlot]),{players:currentData.players,waitlist:currentData.waitlist,settings:s});
-
-  const slotName=['第一場','第二場','第三場'][activeSlot];
-  const totalMain=currentData.players.length;
-  const leftSeats=Math.max(0,10-totalMain);
-  let lineMsg='';
-  if(!isWait){
-    lineMsg=`🎉 ${name} 已報名${slotName}！\n目前 ${totalMain}/10 人`;
-    if(leftSeats>0)lineMsg+=`，還有 ${leftSeats} 個空位`;
-    else lineMsg+=`，已額滿！`;
-    showToast('🎉','報名成功！',name,`你是第 ${totalMain} 位，座位已保留 ♠`);
-  }else{
-    const waitPos=currentData.waitlist.length;
-    lineMsg=`⏳ ${name} 加入${slotName}候補（第 ${waitPos} 順位）\n正式名單已額滿`;
-    showToast('⏳','已加入候補',name,`目前額滿，你是第 ${waitPos} 順位候補\n有人退出會自動遞補！`);
-  }
-  sendLineMsg(lineMsg);
+  if(!isWait)showToast('🎉','報名成功！',name,`你是第 ${currentData.players.length} 位，座位已保留 ♠`);
+  else showToast('⏳','已加入候補',name,`目前額滿，你是第 ${currentData.waitlist.length} 順位候補\n有人退出會自動遞補！`);
 };
 
 window.removePlayer=function(type,idx){
-  if(type==='main'){currentData.players.splice(idx,1);if(currentData.waitlist.length>0)currentData.players.push(currentData.waitlist.shift());}
-  else currentData.waitlist.splice(idx,1);
-  const s=allSlotData[activeSlot]?.settings||{};
-  set(ref(db,SLOT_KEYS[activeSlot]),{players:currentData.players,waitlist:currentData.waitlist,settings:s});
+  const name = type==='main' ? currentData.players[idx] : currentData.waitlist[idx];
+  showRemoveConfirm(type, idx, name);
 };
 
 window.confirmReset=function(){
   if(currentData.players.length===0&&currentData.waitlist.length===0)return;
+  if(!adminUnlocked){showToast('🔒','需要主辦人權限','','請先開啟主辦人設定才能清空名單');return;}
   if(!confirm('確定要清空本時段名單嗎？'))return;
   const s=allSlotData[activeSlot]?.settings||{};
   set(ref(db,SLOT_KEYS[activeSlot]),{players:[],waitlist:[],settings:s});
@@ -337,10 +402,10 @@ function render(){
   document.getElementById('seatLeft').textContent=Math.max(0,10-currentData.players.length);
   const ml=document.getElementById('mainList');
   if(currentData.players.length===0){ml.innerHTML='<div class="empty">尚未有人報名，快來搶位子！</div>';}
-  else{ml.innerHTML=currentData.players.map((p,i)=>`<div class="p-item"><span class="p-suit" style="color:${i%4===1||i%4===2?'#A32D2D':'#2C2C2A'}">${SUITS[i]}</span><span class="p-rank">${RANKS[i]}</span><span class="p-name">${esc(p)}</span>${currentData.players.length===10?'<span class="badge badge-full">滿座</span>':''}<button class="rm-btn" onclick="removePlayer('main',${i})">✕</button></div>`).join('');}
+  else{ml.innerHTML=currentData.players.map((p,i)=>`<div class="p-item"><span class="p-suit" style="color:${i%4===1||i%4===2?'#A32D2D':'#2C2C2A'}">${SUITS[i]}</span><span class="p-rank">${RANKS[i]}</span><span class="p-name">${esc(p)}</span>${currentData.players.length===10?'<span class="badge badge-full">滿座</span>':''}<button class="rm-btn" onclick="removePlayer('main',${i})" title="取消報名">✕</button></div>`).join('');}
   const ws=document.getElementById('waitSection');
   if(currentData.waitlist.length===0){ws.style.display='none';}
-  else{ws.style.display='block';document.getElementById('waitList').innerHTML=currentData.waitlist.map((p,i)=>`<div class="p-item wait"><span class="p-suit" style="color:#bbb">⏳</span><span class="p-rank">${i+1}</span><span class="p-name">${esc(p)}</span><span class="badge badge-wait">候補${i+1}</span><button class="rm-btn" onclick="removePlayer('wait',${i})">✕</button></div>`).join('');}
+  else{ws.style.display='block';document.getElementById('waitList').innerHTML=currentData.waitlist.map((p,i)=>`<div class="p-item wait"><span class="p-suit" style="color:#bbb">⏳</span><span class="p-rank">${i+1}</span><span class="p-name">${esc(p)}</span><span class="badge badge-wait">候補${i+1}</span><button class="rm-btn" onclick="removePlayer('wait',${i})" title="取消候補">✕</button></div>`).join('');}
   updatePreview();
 }
 
@@ -368,6 +433,7 @@ window.copyMsg=function(){const text=document.getElementById('preview').textCont
 function fmtDate(s){if(!s)return'';const[y,m,d]=s.split('-');return`${parseInt(m)}月${parseInt(d)}日`;}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 document.getElementById('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.addPlayer();});
+document.getElementById('toastInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')window.confirmRemove();});
 </script>
 </body>
 </html>
