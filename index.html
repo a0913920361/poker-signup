@@ -121,9 +121,9 @@
   </div>
   <div class="sec-label">🕐 選擇時段報名</div>
   <div class="slot-cards">
-    <div class="slot-card" id="slot-0" onclick="selectSlot(0)"><span class="sc-time">下午 3:00</span><span class="sc-tag">第一場</span><span class="sc-info" id="si-0" style="display:none"></span><span class="sc-count" id="sc-0"></span></div>
-    <div class="slot-card" id="slot-1" onclick="selectSlot(1)"><span class="sc-time">下午 6:00</span><span class="sc-tag">第二場</span><span class="sc-info" id="si-1" style="display:none"></span><span class="sc-count" id="sc-1"></span></div>
-    <div class="slot-card" id="slot-2" onclick="selectSlot(2)"><span class="sc-time">下午 9:00</span><span class="sc-tag">第三場</span><span class="sc-info" id="si-2" style="display:none"></span><span class="sc-count" id="sc-2"></span></div>
+    <div class="slot-card" id="slot-0" onclick="selectSlot(0)"><span class="sc-time" id="st-0">下午 3:00</span><span class="sc-tag">第一場</span><span class="sc-info" id="si-0" style="display:none"></span><span class="sc-count" id="sc-0"></span></div>
+    <div class="slot-card" id="slot-1" onclick="selectSlot(1)"><span class="sc-time" id="st-1">下午 6:00</span><span class="sc-tag">第二場</span><span class="sc-info" id="si-1" style="display:none"></span><span class="sc-count" id="sc-1"></span></div>
+    <div class="slot-card" id="slot-2" onclick="selectSlot(2)"><span class="sc-time" id="st-2">下午 9:00</span><span class="sc-tag">第三場</span><span class="sc-info" id="si-2" style="display:none"></span><span class="sc-count" id="sc-2"></span></div>
   </div>
   <div id="signupArea" style="display:none">
     <div class="sec-label">👤 玩家報名</div>
@@ -209,18 +209,17 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const SUITS=['♠','♥','♦','♣','♠','♥','♦','♣','♠','♥'];
 const RANKS=['A','K','Q','J','10','9','8','7','6','5'];
-const SLOT_LABELS=['下午 3:00（第一場）','下午 6:00（第二場）','下午 9:00（第三場）'];
 const SLOT_KEYS=['slot0','slot1','slot2'];
+const DEFAULT_TIMES=['15:00','18:00','21:00'];
 const ADMIN_PW='4560603';
 let activeSlot=null, adminSlot=0, currentData={players:[],waitlist:[]}, adminUnlocked=false;
 let allSlotData=[{},{},{}];
 let modalMode=null, pendingRemove=null;
 
 function setStatus(msg,type=''){const el=document.getElementById('statusBar');el.textContent=msg;el.className='status-bar '+type;}
-
 function fmtTime(s){if(!s)return'';const[h,m]=s.split(':');const hour=parseInt(h);const p=hour<12?'上午':'下午';const h12=hour===0?12:hour>12?hour-12:hour;return`${p} ${h12}:${m}`;}
+function slotTime(i){const t=allSlotData[i]?.settings?.time;return fmtTime(t||DEFAULT_TIMES[i]);}
 
-// Modal
 function openModal(icon,title,sub,inputPlaceholder,confirmText,mode){
   modalMode=mode;
   document.getElementById('modalIcon').textContent=icon;
@@ -253,7 +252,6 @@ window.modalConfirm=function(){
       setTimeout(()=>document.getElementById('modalInput').classList.remove('shake'),400);
       return;
     }
-    // 清空全部三個時段的名單，保留設定
     SLOT_KEYS.forEach((key,i)=>{
       const s=allSlotData[i]?.settings||{};
       set(ref(db,key),{players:[],waitlist:[],settings:s});
@@ -288,7 +286,7 @@ window.modalConfirm=function(){
 };
 
 window.showResetModal=function(){
-  openModal('🗑️','清空所有報名名單','請輸入主辦人密碼以確認清空\n（三個時段全部清除）','輸入密碼...','確認清空',  'reset');
+  openModal('🗑️','清空所有報名名單','請輸入主辦人密碼以確認清空\n（三個時段全部清除）','輸入密碼...','確認清空','reset');
 };
 
 [0,1,2].forEach(i=>{
@@ -309,7 +307,6 @@ function updateEventBanner(){
   if(!found){box.innerHTML='<div class="eb-empty">主辦人尚未設定賽事資訊</div>';return;}
   let html='';
   if(found.date)html+=`<div class="eb-row"><span>📅</span><span class="eb-val">${fmtDate(found.date)}</span></div>`;
-  if(found.time)html+=`<div class="eb-row"><span>🕐</span><span class="eb-val">${fmtTime(found.time)}</span></div>`;
   if(found.place)html+=`<div class="eb-row"><span>📍</span><span class="eb-val">${esc(found.place)}</span></div>`;
   if(found.fee)html+=`<div class="eb-row"><span>💰</span><span class="eb-val">報名費 ${Number(found.fee).toLocaleString()} ${found.currency||'NTD'}</span></div>`;
   box.innerHTML=html||'<div class="eb-empty">主辦人尚未設定賽事資訊</div>';
@@ -317,6 +314,8 @@ function updateEventBanner(){
 
 function updateSlotCard(i){
   const d=allSlotData[i];const s=d.settings||{};const p=(d.players||[]).length;
+  const st=document.getElementById('st-'+i);
+  if(st)st.textContent=slotTime(i);
   const si=document.getElementById('si-'+i);
   let info='';
   if(s.place)info+=`📍 ${esc(s.place)}\n`;
@@ -423,8 +422,7 @@ function updatePreview(){
   const s=allSlotData[activeSlot]?.settings||{};
   let msg='♠♥♦♣ 揪友娛樂坊 ♠♥♦♣\n🎰 週六娛樂局\n━━━━━━━━━━━━━━━━\n';
   if(s.date)msg+=`📅 日期：${fmtDate(s.date)}\n`;
-  if(s.time)msg+=`🕐 時間：${fmtTime(s.time)}\n`;
-  msg+=`🃏 時段：${SLOT_LABELS[activeSlot]}\n`;
+  msg+=`🕐 時間：${slotTime(activeSlot)}\n`;
   if(s.place)msg+=`📍 地點：${s.place}\n`;
   if(s.fee)msg+=`💰 報名費：${Number(s.fee).toLocaleString()} ${s.currency||'NTD'}\n`;
   msg+='━━━━━━━━━━━━━━━━\n';
